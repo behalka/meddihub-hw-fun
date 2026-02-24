@@ -1,0 +1,48 @@
+{
+  "name": "meddihub-hw",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "engines": {
+    "node": "24.x",
+    "npm": "11.x"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "start:prod": "node dist/main.js",
+    "start": "nest start",
+    "test": "dotenvx run -f .env.test -- nest start",
+    "lint": "eslint .",
+    "format": "prettier --write \"src/**/*.{ts,json,md}\""
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@mikro-orm/cli": "^6.6.7",
+    "@mikro-orm/migrations": "^6.6.7",
+    "@nestjs/cli": "^11.0.16",
+    "eslint": "^10.0.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "prettier": "^3.8.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1"
+  },
+  "dependencies": {
+    "@dotenvx/dotenvx": "^1.52.0",
+    "@mikro-orm/core": "^6.6.7",
+    "@mikro-orm/nestjs": "^6.1.1",
+    "@mikro-orm/postgresql": "^6.6.7",
+    "@nestjs/common": "^11.1.14",
+    "@nestjs/core": "^11.1.14",
+    "@nestjs/platform-express": "^11.1.14",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.3",
+    "dotenv": "^17.3.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "uuid": "^13.0.0"
+  }
+}

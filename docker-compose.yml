@@ -1,0 +1,21 @@
+services:
+  postgres:
+    container_name: postgres_meddihub-hw
+    image: postgres:18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /.data/postgres
+    volumes:
+      - ./scripts/postgres-entrypoint:/docker-entrypoint-initdb.d
+    ports:
+      - "6543:5432"
+    networks:
+      - postgres
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres:
