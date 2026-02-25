@@ -13,7 +13,7 @@
     "build": "tsc -p .",
     "start:prod": "node dist/main.js",
     "start": "nest start",
-    "test": "dotenvx run -f .env.test -- nest start",
+    "test": "dotenvx run -f .env.test -- jest --verbose --runInBand",
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.{ts,json,md}\""
   },
@@ -22,10 +22,14 @@
     "@mikro-orm/cli": "^6.6.7",
     "@mikro-orm/migrations": "^6.6.7",
     "@nestjs/cli": "^11.0.16",
+    "@nestjs/testing": "^11.1.14",
+    "@types/jest": "^29.5.14",
     "eslint": "^10.0.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
+    "jest": "^30.2.0",
     "prettier": "^3.8.1",
+    "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1"

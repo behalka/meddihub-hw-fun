@@ -14,6 +14,7 @@
 - swagger docs
 - tests
 - logging
+- docker
  
 ### Omitted
 

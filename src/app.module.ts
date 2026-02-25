@@ -1,7 +1,8 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { ProjectsModule } from './modules/projects/projects.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { MikroORM, PostgreSqlDriver } from '@mikro-orm/postgresql';
+import { MikroORM } from '@mikro-orm/postgresql';
 import { Migrator } from '@mikro-orm/migrations';
 import mikroOrmConfig from './mikro-orm.config';
 
@@ -16,6 +17,7 @@ import mikroOrmConfig from './mikro-orm.config';
       extensions: [Migrator],
     }),
     ProjectsModule,
+    TasksModule,
   ],
   controllers: [],
   providers: [],

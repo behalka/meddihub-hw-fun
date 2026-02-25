@@ -1,4 +1,3 @@
-import { Migrator } from '@mikro-orm/migrations';
 import { defineConfig } from '@mikro-orm/postgresql';
 import { appConfig } from './config/app-config';
 
@@ -10,5 +9,5 @@ export default defineConfig({
   user: appConfig.DB_USER,
   password: appConfig.DB_PASSWORD,
   dbName: appConfig.DB_NAME,
-  debug: true,
+  debug: false,
 });
