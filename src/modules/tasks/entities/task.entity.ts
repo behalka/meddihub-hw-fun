@@ -1,5 +1,14 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  ManyToMany,
+  ManyToOne,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
 import { v4 } from 'uuid';
+import { Project } from '../../projects/entities/project.entity';
+import { Tag } from './tag.entity';
 
 export enum TaskStatus {
   NEW = 'NEW',
@@ -23,4 +32,10 @@ export class Task {
 
   @Property({ onUpdate: () => new Date() })
   updatedAt = new Date();
+
+  @ManyToOne({ entity: () => Project })
+  project!: Project;
+
+  @ManyToMany({ inversedBy: 'tasks', entity: () => Tag })
+  tags = new Collection<Tag>(this);
 }

@@ -4,11 +4,13 @@ import { TasksControllerV1 } from './controllers/tasks.controller.v1';
 import { CreateTasksService } from './services/create-tasks.service';
 import { GetTasksService } from './services/get-tasks.service';
 import { Task } from './entities/task.entity';
+import { Tag } from './entities/tag.entity';
+import { TagsService } from './services/tags.service';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([Task])],
+  imports: [MikroOrmModule.forFeature([Task, Tag])],
   controllers: [TasksControllerV1],
-  providers: [CreateTasksService, GetTasksService],
+  providers: [CreateTasksService, GetTasksService, TagsService],
   exports: [],
 })
 export class TasksModule {}

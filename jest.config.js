@@ -3,8 +3,14 @@ module.exports = {
   rootDir: 'src',
   testRegex: '(.spec|.e2e-spec).ts$',
   transform: {
-    '^.+\\.(t|j)s$': 'ts-jest',
+    '^.+\\.(t|j)s$': [
+      'ts-jest',
+      {
+        tsConfig: 'tsconfig.local.json',
+      },
+    ],
   },
+
   testEnvironment: 'node',
   transformIgnorePatterns: ['/node_modules/(?!(uuid)/)'],
 };

@@ -1,4 +1,12 @@
-import { IsEnum, IsOptional, IsString, Length } from 'class-validator';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+} from 'class-validator';
 import { TaskStatus } from '../entities/task.entity';
 
 export class CreateTaskDto {
@@ -7,7 +15,15 @@ export class CreateTaskDto {
   readonly status?: TaskStatus;
 
   @IsString()
-  @IsOptional()
   @Length(2, 1024)
-  readonly description?: string;
+  readonly description!: string;
+
+  @IsUUID()
+  readonly projectId!: string;
+
+  @IsArray()
+  @ArrayMaxSize(100)
+  @IsString({ each: true })
+  @Length(2, 255, { each: true })
+  readonly tags?: string[];
 }
