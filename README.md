@@ -1,8 +1,24 @@
 # Meddihub HW
 
-## Requirements
+## How to run
 
-(:
+```bash
+# set up local env
+$ npm install
+$ docker compose up -d
+$ mv .env.example .env
+
+# run the API locally 
+$ npm run start
+
+# run tests
+$ npm run db:recreate:tests
+$ npm run test
+```
+
+### Time estimate
+
+- 26/2/2026 16:00 - about 12h
 
 ### Features
 
@@ -10,11 +26,13 @@
 
 ### To add
 
-- pagination
+- pagination + filtering of get tasks endpoint
 - swagger docs
 - e2e tests
 - docker
 - output serialization
+  - clearer separation of output DTOs and database entities would be ideal
+  - also, some internal columns do not need to be exposed (e.g. updatedAt)
  
 ### Omitted
 
@@ -27,8 +45,11 @@
 - logging
 - tests are not robust enough for production code
   - for example, input validation for create/update tasks endpoint
-  - 
 
 ### Arch. decisions
 
+- overall nestjs framework + mikro-orm + postgres DB
+  - set up for local development via docker-compose
+  - set up local "dev" database for experimenting and another database for running integration tests
+- I have skipped unit tests, I believe integration tests with DB access are the fastest way to ensure shipping a new small project 
 - Task.status enum exists on application level only, we do not enforce DB enums, as those can be difficult to maintain via migrations

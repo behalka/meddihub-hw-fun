@@ -6,7 +6,9 @@ import { CreateTaskDto } from '../dto/create-task.dto';
 import { UpdateTaskDto } from '../dto/update-task.dto';
 import { TaskIdParamDto } from '../dto/task-id-param.dto';
 import { Task } from '../entities/task.entity';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Tasks')
 @Controller({
   path: 'tasks',
   version: '1',
@@ -19,16 +21,36 @@ export class TasksControllerV1 {
   ) {}
 
   @Get('')
+  @ApiOperation({ summary: 'List all tasks' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return all tasks.',
+    type: Task,
+    isArray: true,
+  })
   public async list(): Promise<Array<Task>> {
     return this.getTasksService.fetch();
   }
 
   @Post('')
+  @ApiOperation({ summary: 'Create a new task' })
+  @ApiResponse({
+    status: 201,
+    description: 'The task has been successfully created.',
+    type: Task,
+  })
   public async create(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
     return this.createTasksService.create(createTaskDto);
   }
 
   @Patch(':taskId')
+  @ApiOperation({ summary: 'Update an existing task' })
+  @ApiResponse({
+    status: 200,
+    description: 'The task has been successfully updated.',
+    type: Task,
+  })
+  @ApiResponse({ status: 404, description: 'Task not found.' })
   public async update(
     @Param() { taskId }: TaskIdParamDto,
     @Body() updateTaskDto: UpdateTaskDto,
