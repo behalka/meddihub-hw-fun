@@ -5,7 +5,7 @@ import {
   Param,
   Patch,
   Post,
-  UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { GetTasksService } from '../services/get-tasks.service';
 import { CreateTasksService } from '../services/create-tasks.service';
@@ -15,6 +15,7 @@ import { UpdateTaskDto } from '../dto/update-task.dto';
 import { TaskIdParamDto } from '../dto/task-id-param.dto';
 import { Task } from '../entities/task.entity';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { GetTasksInputDto } from '../dto/get-tasks.input.dto';
 
 @ApiTags('Tasks')
 @Controller({
@@ -36,8 +37,8 @@ export class TasksControllerV1 {
     type: Task,
     isArray: true,
   })
-  public async list(): Promise<Array<Task>> {
-    return this.getTasksService.fetch();
+  public async list(@Query() dto: GetTasksInputDto): Promise<Array<Task>> {
+    return this.getTasksService.fetch(dto);
   }
 
   @Post('')

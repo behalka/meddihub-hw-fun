@@ -12,5 +12,6 @@ module.exports = {
   },
 
   testEnvironment: 'node',
+  setupFilesAfterEnv: ['./jest-setup.ts'],
   transformIgnorePatterns: ['/node_modules/(?!(uuid)/)'],
 };
