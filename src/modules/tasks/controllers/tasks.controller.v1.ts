@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import { GetTasksService } from '../services/get-tasks.service';
 import { CreateTasksService } from '../services/create-tasks.service';
 import { UpdateTasksService } from '../services/update-tasks.service';

@@ -20,13 +20,13 @@ export class Tag {
   name!: string;
 
   @ApiProperty({ example: '2021-01-01T00:00:00.000Z' })
-  @Property({ defaultRaw: 'now()' })
+  @Property({ defaultRaw: 'now()', hidden: true })
   createdAt = new Date();
 
   @ApiProperty({ example: '2021-01-01T00:00:00.000Z' })
-  @Property({ onUpdate: () => new Date(), defaultRaw: 'now()' })
+  @Property({ onUpdate: () => new Date(), defaultRaw: 'now()', hidden: true })
   updatedAt = new Date();
 
-  @ManyToMany({ mappedBy: 'tags', entity: () => Task })
+  @ManyToMany({ mappedBy: 'tags', entity: () => Task, hidden: true })
   tasks = new Collection<Task>(this);
 }

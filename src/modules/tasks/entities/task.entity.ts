@@ -36,7 +36,7 @@ export class Task {
   createdAt = new Date();
 
   @ApiProperty({ example: '2021-01-01T00:00:00.000Z' })
-  @Property({ onUpdate: () => new Date() })
+  @Property({ onUpdate: () => new Date(), hidden: true })
   updatedAt = new Date();
 
   @ApiProperty({ type: () => Project })
@@ -44,6 +44,9 @@ export class Task {
   project!: Project;
 
   @ApiProperty({ type: () => Tag, isArray: true })
-  @ManyToMany({ inversedBy: 'tasks', entity: () => Tag })
+  @ManyToMany({
+    inversedBy: 'tasks',
+    entity: () => Tag,
+  })
   tags = new Collection<Tag>(this);
 }

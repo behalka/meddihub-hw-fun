@@ -17,10 +17,10 @@ export class Project {
   description!: string;
 
   @ApiProperty({ example: '2021-01-01T00:00:00.000Z' })
-  @Property()
+  @Property({ hidden: true })
   createdAt = new Date();
 
   @ApiProperty({ example: '2021-01-01T00:00:00.000Z' })
-  @Property({ onUpdate: () => new Date() })
+  @Property({ onUpdate: () => new Date(), hidden: true })
   updatedAt = new Date();
 }
