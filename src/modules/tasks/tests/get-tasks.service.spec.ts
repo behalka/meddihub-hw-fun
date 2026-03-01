@@ -6,6 +6,7 @@ import { Project } from '../../projects/entities/project.entity';
 import { GetTasksService } from '../services/get-tasks.service';
 import { MikroORM } from '@mikro-orm/postgresql';
 import mikroOrmConfig from '../../../mikro-orm.config';
+import { BadRequestException } from '@nestjs/common';
 
 describe('GetTasksService', () => {
   let module: TestingModule;
@@ -61,37 +62,60 @@ describe('GetTasksService', () => {
       }
       await em.persist([project, ...tasks]).flush();
 
-      const fetchedTasks = await service.fetch({});
-      expect(fetchedTasks).toHaveLength(10);
+      const expectedTasksInOrder = await em
+        .fork()
+        .find(Task, {}, { orderBy: { id: 'desc' } });
+
+      const taskIdsPage1 = expectedTasksInOrder.slice(0, 10).map((t) => t.id);
+      const tasksPage1 = await service.fetch({});
+      expect(tasksPage1.items).toHaveLength(10);
+      expect(tasksPage1.items.map((t) => t.id)).toEqual(taskIdsPage1);
+
+      const taskIdsPage2 = expectedTasksInOrder.slice(10).map((t) => t.id);
+      const tasksPage2 = await service.fetch({
+        nextCursor: Buffer.from(tasksPage1.endCursor, 'base64').toString(
+          'utf8',
+        ),
+      });
+      expect(tasksPage2.items).toHaveLength(5);
+      expect(tasksPage2.items.map((t) => t.id)).toEqual(taskIdsPage2);
     });
 
-    it('should return correct tasks based on limit and offset', async () => {
-      const em = orm.em.fork();
-      const project = em.create(Project, {
-        name: 'Test Project',
-        description: 'Test Description',
+    describe('invalid cursor', () => {
+      it('should throw BadRequestException for non-JSON cursor', async () => {
+        // "invalid-json" -> "aW52YWxpZC1qc29u" in base64
+        await expect(
+          service.fetch({ nextCursor: 'aW52YWxpZC1qc29u' }),
+        ).rejects.toThrow(BadRequestException);
       });
 
-      const tasks = [];
-      for (let i = 0; i < 5; i++) {
-        tasks.push(
-          em.create(Task, {
-            description: `Task ${i}`,
-            project,
-            status: TaskStatus.NEW,
-          }),
+      it('should throw BadRequestException for non-array JSON cursor', async () => {
+        // JSON: "123" -> base64: "MTIz"
+        await expect(service.fetch({ nextCursor: 'MTIz' })).rejects.toThrow(
+          BadRequestException,
         );
-      }
-      // Sort tasks by description to ensure deterministic order if needed,
-      // but MikroORM find order might vary if not specified.
-      // We'll just check the count for now.
-      await em.persist([project, ...tasks]).flush();
+      });
 
-      const limit = 2;
-      const offset = 1;
-      const fetchedTasks = await service.fetch({});
+      it('should throw BadRequestException for empty array cursor', async () => {
+        // JSON: "[]" -> base64: "W10="
+        await expect(service.fetch({ nextCursor: 'W10=' })).rejects.toThrow(
+          BadRequestException,
+        );
+      });
 
-      expect(fetchedTasks).toHaveLength(2);
+      it('should throw BadRequestException for multiple elements in array cursor', async () => {
+        // JSON: ["uuid1", "uuid2"] -> base64: "WyJ1dWlkMSIsICJ1dWlkMiJd"
+        await expect(
+          service.fetch({ nextCursor: 'WyJ1dWlkMSIsICJ1dWlkMiJd' }),
+        ).rejects.toThrow(BadRequestException);
+      });
+
+      it('should throw BadRequestException for invalid UUID in array cursor', async () => {
+        // JSON: ["not-a-uuid"] -> base64: "WyJub3QtYS11dWlkIl0="
+        await expect(
+          service.fetch({ nextCursor: 'WyJub3QtYS11dWlkIl0=' }),
+        ).rejects.toThrow(BadRequestException);
+      });
     });
   });
 
@@ -113,7 +137,7 @@ describe('GetTasksService', () => {
 
       await em.persist([project, tag1, tag2, task]).flush();
 
-      const [fetchedTask] = await service.fetch({});
+      const [fetchedTask] = (await service.fetch({})).items;
 
       expect(fetchedTask.project).toBeDefined();
       expect(fetchedTask.project.name).toBe('Project with Task');
@@ -143,8 +167,8 @@ describe('GetTasksService', () => {
       await em.persist([project, task1, task2]).flush();
 
       const fetchedTasks = await service.fetch({ description: 'another' });
-      expect(fetchedTasks).toHaveLength(1);
-      expect(fetchedTasks[0].id).toEqual(task2.id);
+      expect(fetchedTasks.items).toHaveLength(1);
+      expect(fetchedTasks.items[0].id).toEqual(task2.id);
     });
   });
 
@@ -183,8 +207,8 @@ describe('GetTasksService', () => {
 
       const fetchedTasks = await service.fetch({ tags: ['tag2', 'tag3'] });
 
-      expect(fetchedTasks).toHaveLength(2);
-      expect(fetchedTasks.map((task) => task.id)).toIncludeSameMembers([
+      expect(fetchedTasks.items).toHaveLength(2);
+      expect(fetchedTasks.items.map((task) => task.id)).toIncludeSameMembers([
         task1.id,
         task2.id,
       ]);
@@ -202,8 +226,8 @@ describe('GetTasksService', () => {
 
       const fetchedTasks = await service.fetch({ tags: ['tag1'] });
 
-      expect(fetchedTasks).toHaveLength(1);
-      expect(fetchedTasks[0].id).toEqual(task1.id);
+      expect(fetchedTasks.items).toHaveLength(1);
+      expect(fetchedTasks.items[0].id).toEqual(task1.id);
     });
   });
 
@@ -234,9 +258,9 @@ describe('GetTasksService', () => {
 
       const fetchedTasks = await service.fetch({ projectId: project1.id });
 
-      expect(fetchedTasks).toHaveLength(1);
-      expect(fetchedTasks[0].id).toBe(task1.id);
-      expect(fetchedTasks[0].project.id).toBe(project1.id);
+      expect(fetchedTasks.items).toHaveLength(1);
+      expect(fetchedTasks.items[0].id).toBe(task1.id);
+      expect(fetchedTasks.items[0].project.id).toBe(project1.id);
     });
   });
 
@@ -304,12 +328,12 @@ describe('GetTasksService', () => {
         tags: ['beta', 'delta'],
       });
 
-      expect(fetchedTasks).toHaveLength(1);
-      expect(fetchedTasks[0].id).toBe(matchTask.id);
-      expect(fetchedTasks[0].project.id).toBe(projectA.id);
+      expect(fetchedTasks.items).toHaveLength(1);
+      expect(fetchedTasks.items[0].id).toBe(matchTask.id);
+      expect(fetchedTasks.items[0].project.id).toBe(projectA.id);
       expect(
-        fetchedTasks[0].tags.getItems().map((t) => t.name),
-      ).toIncludeSameMembers(['beta']);
+        fetchedTasks.items[0].tags.getItems().map((t) => t.name),
+      ).toContain('beta');
     });
   });
 });

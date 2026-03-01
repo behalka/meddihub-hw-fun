@@ -19,6 +19,7 @@ $ npm run test
 ### Time estimate
 
 - 26/2/2026 16:00 - about 12h
+- 1/3/2026 - 18:00 - about 2hrs
 
 ### Features
 
@@ -45,6 +46,7 @@ $ npm run test
 - logging
 - tests are not robust enough for production code
   - for example, input validation for create/update tasks endpoint
+  - another example, the completeness of output entities should be tested (e.g. references are loaded, but some sensitive properties are excluded)
 
 ### Arch. decisions
 

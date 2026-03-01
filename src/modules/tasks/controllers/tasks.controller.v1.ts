@@ -16,6 +16,7 @@ import { TaskIdParamDto } from '../dto/task-id-param.dto';
 import { Task } from '../entities/task.entity';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetTasksInputDto } from '../dto/get-tasks.input.dto';
+import { TasksPaginationOutputDto } from '../dto/tasks-pagination.output.dto';
 
 @ApiTags('Tasks')
 @Controller({
@@ -33,11 +34,12 @@ export class TasksControllerV1 {
   @ApiOperation({ summary: 'List all tasks' })
   @ApiResponse({
     status: 200,
-    description: 'Return all tasks.',
-    type: Task,
-    isArray: true,
+    description: 'Return pagination wrapper with tasks.',
+    type: TasksPaginationOutputDto,
   })
-  public async list(@Query() dto: GetTasksInputDto): Promise<Array<Task>> {
+  public async list(
+    @Query() dto: GetTasksInputDto,
+  ): Promise<TasksPaginationOutputDto> {
     return this.getTasksService.fetch(dto);
   }
 
