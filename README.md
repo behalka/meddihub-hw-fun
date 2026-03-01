@@ -24,13 +24,10 @@ $ npm run test
 ### Features
 
 - simple validated config with env overrides via CLI
+- cursor-based pagination
 
 ### To add
 
-- pagination + filtering of get tasks endpoint
-- swagger docs
-- e2e tests
-- docker
 - output serialization
   - clearer separation of output DTOs and database entities would be ideal
   - also, some internal columns do not need to be exposed (e.g. updatedAt)
@@ -47,6 +44,8 @@ $ npm run test
 - tests are not robust enough for production code
   - for example, input validation for create/update tasks endpoint
   - another example, the completeness of output entities should be tested (e.g. references are loaded, but some sensitive properties are excluded)
+  - e2e tests missing - not enough time
+- docker image - ideally, when we discuss deployment, the first step is to prepare a docker image with the application 
 
 ### Arch. decisions
 
