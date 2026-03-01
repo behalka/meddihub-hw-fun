@@ -1,7 +1,9 @@
 import {
   ArrayMaxSize,
   IsArray,
+  IsInt,
   IsNumber,
+  IsNumberString,
   IsOptional,
   IsString,
   IsUUID,
@@ -10,19 +12,24 @@ import {
   Min,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class GetTasksInputDto {
-  @IsUUID()
   @IsOptional()
   @ApiProperty({
     description: 'Project id - where the task belongs to',
     example: '353e1a0b-193e-4b71-b258-450f69903e1a',
     required: false,
+    type: String,
   })
+  @IsUUID()
   projectId?: string;
 
-  @ApiProperty({ example: ['bug', 'resolved'], required: false })
+  @ApiProperty({
+    example: ['bug', 'resolved'],
+    required: false,
+    type: [String],
+  })
   @IsOptional()
   @IsArray()
   @ArrayMaxSize(100)
@@ -40,18 +47,20 @@ export class GetTasksInputDto {
   @IsOptional()
   @IsString()
   @Length(2, 1024)
-  @Transform(({ value }) => Buffer.from(value, 'base64').toString('utf8'))
   @ApiProperty({
     description: 'Next taskId we are looking for - base64 encoded',
     example: 'WyI1YzY1MmViMy03Zjc2LTRiNGYtOTBhOS05OGMzZDBjMTQxZmUiXQ',
     required: false,
+    type: String,
   })
+  @Transform(({ value }) => Buffer.from(value, 'base64').toString('utf8'))
   nextCursor?: string;
 
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   @Min(1)
   @Max(100)
+  @Type(() => Number)
   @ApiProperty({
     description: 'Pagination limit',
     example: 10,
